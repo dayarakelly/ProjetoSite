@@ -40,7 +40,8 @@ client.connect();
 
 
 //definindo as rotas
-router.get('/api/v1/todos', (req, res, next) => {
+router.post('/api/v1/todos', (req, res, next) => {
+	console.log(req.body)
   const results = [];
   // Grab data from http request
   const data = {text: req.body.text, complete: false};
@@ -54,7 +55,34 @@ router.get('/api/v1/todos', (req, res, next) => {
     }
     // SQL Query > Insert Data
     client.query('INSERT INTO receitas(titulo, descricao) values($1, $2)',
-    ['Salada', 'Vegetais variados']);
+    [req.body.titulo,req.body.descricao]);
+    // SQL Query > Select Data
+    const query = client.query('SELECT * FROM receitas ORDER BY id ASC');
+    // Stream results back one row at a time
+    query.on('row', (row) => {
+      results.push(row);
+    });
+    // After all data is returned, close connection and return results
+    query.on('end', () => {
+      done();
+      return res.json(results);
+    });
+  });
+});router.get('/api/v1/todos', (req, res, next) => {
+	console.log(req.body)
+  const results = [];
+  // Grab data from http request
+  const data = {text: req.body.text, complete: false};
+  // Get a Postgres client from the connection pool
+  pg.connect(connectionString, (err, client, done) => {
+   const results = [];
+    // Handle connection errors
+    if(err) {
+      done();
+      console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+ 
     // SQL Query > Select Data
     const query = client.query('SELECT * FROM receitas ORDER BY id ASC');
     // Stream results back one row at a time
@@ -68,6 +96,7 @@ router.get('/api/v1/todos', (req, res, next) => {
     });
   });
 });
+
 //
 
 router.get('/api/v1/update/:todo_id/:titulo/:descricao', (req, res, next) => {
