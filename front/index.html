@@ -1,76 +1,107 @@
-<!DOCTYPE html>
-<html>
-<head>
+		<!DOCTYPE html>
+		<html>
+		<head>
 
-<title>Receitas</title>
-<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Roboto+Slab:400,700|Pacifico' rel='stylesheet' type='text/css'>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
-</head>
+		<title>Receitas</title>
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Roboto+Slab:400,700|Pacifico' rel='stylesheet' type='text/css'>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.0"></script>
+		</head>
 
-<body>
-<div id="app" class="container">
-{{message}} {{titulo}} <!--{{v1}} + {{v2}}--> {{buscar}} {{dados}}
+		<body>
+		<div id="app" class="container">
+		{{message}} {{titulo}} <!--{{v1}} + {{v2}}--> {{buscar}} 
 
-<div>
-<label for="name">Título:</label>
-<input type="text" id="buscar" v-model= "buscar"/>
-<button @click="buscardados">Buscar
-</button><br>
-<!--<input type="text" id="título" v-model= "titulo"/>-->
-<!--<input type="text" id="v1" v-model= "v1"/>
-<input type="text" id="v2" v-model= "v2"/>
-<button @click="calcular(v1,v2)">Calcular
-</button><br>
-{{resultado}}-->
-</div>
-<div>
-<label for="msg">Receita:</label>
-<textarea id="msg"></textarea>
-</div>
-<div class="button">
-<button type="submit">Enviar</button>
-</div>
-
-</div>
-<script>
-var app = new Vue({
-el: '#app',
-data: {
-//v1:'',
-//v2:'',
-//resultado:'',
-message: 'Hello Vue!', 
-titulo:'',
-buscar:'',
-dados:''
-},
-methods:{
-//calcular: function (v1,v2){
-//this.resultado= parseInt(v1) + parseInt(v2)
-
-buscardados: function(){
-alert()
-// GET /someUrl
-  this.$http.get('http://localhost:3000/api/v1/todos').then(response => {
-    // get body data
-	console.log(response);
-    this.dados = response;
-  }, response => {
-  
-    // error callback
-  });
-}
-}
-})
+		<div>
+		<label for="name">Título:</label>
+		<input type="text" id="buscar" v-model="titulo"/>
+		<button @click="buscardados">Buscar
+		</button><br>
 
 
-</script>
+		<!--<input type="text" id="título" v-model= "titulo"/>-->
+		<!--<input type="text" id="v1" v-model= "v1"/>
+		<input type="text" id="v2" v-model= "v2"/>
+		<button @click="calcular(v1,v2)">Calcular
+		</button><br>
+		{{resultado}}-->
 
-</body>
-</html>
+
+		</div>
+		<div>
+		<label for="msg">Receita:</label>
+		<textarea id="msg" v-model="descricao"></textarea>
+		</div>
+		<div class="button">
+		<button @click="criarDados">Enviar</button>
+		</div>
+		
+	<ul >
+	  <li v-for="dado in dados">
+		titulo:{{ dado.titulo }}<br>
+		descricao: {{dado.descricao}}<br><br>
+	  </li>
+	</ul>
+	
+		</div>
+		<script>
+		var app = new Vue({
+		el: '#app',
+		data: {
+		//v1:'',
+		//v2:'',
+		//resultado:'',
+		message: 'Hello Vue!', 
+		titulo:'',
+		buscar:'',
+		dados:'',
+		descricao:''
+		},
+		created:function() {
+		  this.$http.get('http://localhost:3000/api/v1/todos').then(response => {
+			// get body data
+			console.log(response);
+			this.dados = response.body;
+		  }, response => {
+		  
+			// error callback
+		  });
+		},
+		methods:{
+		//calcular: function (v1,v2){
+		//this.resultado= parseInt(v1) + parseInt(v2)
+
+		buscardados: function(){
+		alert()
+		// GET /someUrl
+		  this.$http.get('http://localhost:3000/api/v1/todos').then(response => {
+			// get body data
+			console.log(response);
+			this.dados = response;
+		  }, response => {
+		  
+			// error callback
+		  });
+		},
+		criarDados: function(){
+		this.$http.post('http://localhost:3000/api/v1/todos', {"titulo": this.titulo,"descricao":this.descricao}).then(response => {
+			// get body data
+			console.log(response);
+		   
+		  }
+		);
+
+				}
+			}
+		})
+
+
+		</script>
+
+		</body>
+		</html>
